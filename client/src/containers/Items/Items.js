@@ -9,7 +9,7 @@ const Items = () => {
 }
 
 Items.propTypes = {
-    login: PropTypes.func.isRequired
+
 };
 
 export default Items;
