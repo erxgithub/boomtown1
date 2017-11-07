@@ -5,13 +5,7 @@ import './styles.css';
 
 const Layout = ({ children }) => (
     <div className="appContentWrapper">
-        <div className="appHeader">
-            {/* Might want to put your header bar here... */}
-        </div>
-        <div className="appContent">
-            {children}
-        </div>
-        {/* And a footer here, but not on the login route... */}
+        {children}
     </div>
 );
 

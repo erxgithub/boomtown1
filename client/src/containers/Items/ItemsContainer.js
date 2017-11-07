@@ -1,74 +1,66 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import {connect} from 'react-redux';
+import { fetchItemsAndUsers, loadTagValues } from '../../redux/modules/items';
 
 import Items from './Items';
 
 class ItemsContainer extends Component {
-    constructor() {
-        super();
-
-        this.state = {
-            itemsData: [],
-            isLoading: false
-        }
-    }
-
     componentDidMount() {
-        this.getItems();
+        let tagValues = this.props.tagValues;
+        let profileId = this.props.match.params.id;
+        this.props.dispatch(fetchItemsAndUsers(tagValues, profileId));
     }
 
-    getItems() {
-        let urls = [
-            'http://localhost:3001/items',
-            'http://localhost:3001/users'
-        ];
-
-        this.setState({
-            isLoading: true
-        });
-
-        Promise.all(urls.map((request) => {
-            return fetch(request).then((response) => {
-                return response.json();
-            }).then((data) => {
-                return data;
-            });
-        })).then((values) => {
-            console.log('items', values[0]);
-            console.log('users', values[1]);
-
-            // let items = values[0];
-            // let users = values[1];
-
-            const [items, users] = values;
-
-            let itemsData = items.map((item) => {
-                const itemowner = users.find((user) => user.id === item.itemowner)
-                item.itemowner = itemowner;
-
-                return item;
-            });
-
-            console.log('data', itemsData);
-
-            this.setState({
-                itemsData,
-                isLoading: false
-            });
-        }).catch((error) => {
-            console.log(error);
-        });
-    }
+    handleChange = (event, index, tagValues) => {
+        this.props.dispatch(loadTagValues(tagValues));
+        this.props.dispatch(fetchItemsAndUsers(tagValues));
+    };
 
     render() {
+        let itemsData = this.props.itemsData;
+        let tagData = this.props.tagData;
+        let tagValues = this.props.tagValues;
+        let profileData = this.props.profileData;
+        let isLoading = this.props.isLoading;
+
         return (
-            <Items />
+            <Items
+                itemsData={itemsData}
+                tagData={tagData}
+                tagValues={tagValues}
+                profileData={profileData}
+                isLoading={isLoading}
+                handleChange={this.handleChange.bind(this)}
+            />
         );
     }
 }
 
 ItemsContainer.propTypes = {
-
+    itemsData: PropTypes.array,
+    tagData: PropTypes.array,
+    tagValues: PropTypes.array,
+    profileData: PropTypes.shape({
+        id: PropTypes.string,
+        fullname: PropTypes.string,
+        email: PropTypes.string,
+        bio: PropTypes.string,
+        shared: PropTypes.number,
+        borrowed: PropTypes.number,
+        borroweditems: PropTypes.array
+    }),
+    isLoading: PropTypes.bool.isRequired
 };
 
-export default ItemsContainer;
+const mapStateToProps = state => ({
+    isLoading: state.items.isLoading,
+    itemsData: state.items.itemsData,
+    tagData: state.items.tagData,
+    tagValues: state.items.tagValues,
+    profileData: state.items.profileData
+});
+
+//export default ItemsContainer
+
+export default connect(mapStateToProps)(ItemsContainer);

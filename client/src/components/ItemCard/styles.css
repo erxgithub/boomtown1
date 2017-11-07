@@ -1,0 +1,20 @@
+.masonryItem {
+    width: 98%;
+    margin: 1%;
+}
+
+@media only screen and (min-width: 600px) {
+    .masonryItem {
+        width: 48%;
+    }
+}
+
+@media only screen and (min-width: 960px) {
+    .masonryItem {
+        width: 31%;
+    }
+}
+
+.cardAvatar img {
+    border-radius: 50%;
+}
